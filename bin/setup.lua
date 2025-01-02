@@ -155,15 +155,12 @@ local target_dir = os.getenv("HOME") .. "/ansible"
 if run_command("git clone " .. REPO_URL .. " " .. temp_dir) then
     create_tmp_dir()
     print("Repository cloned successfully into " .. temp_dir)
-else
-    print("An error occurred while cloning the repository.")
-    os.exit(1)
 end
 
 -- Check if the directory exists
-if run_command("test -d " .. target_dir) then
-    print(target_dir .. " already exists.")
-    print("Do you want to overwrite it? (yes/no): ")
+if run_command("test -d " .. temp_dir) then
+    print(temp_dir .. " already exists.")
+    print("Do you want to overwrite the main directory? (yes/no): ")
     local answer = io.read()
     if answer == "yes" then
         print("Moving temp directory to target directory")
@@ -173,12 +170,8 @@ if run_command("test -d " .. target_dir) then
         print("Exiting without overwriting the directory.")
         os.exit(1)
     end
-
-    -- Remove the existing directory
-    if not run_command("rm -rf " .. target_dir) then
-        print("An error occurred while removing the directory.")
-        os.exit(1)
-    end
 else
-    print(target_dir .. " does not exist. Creating the directory...")
+    print("Creating target directory")
+    run_command("mv -f " .. temp_dir .. " " .. target_dir)
+    os.exit(1)
 end
