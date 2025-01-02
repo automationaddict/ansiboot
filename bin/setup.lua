@@ -158,7 +158,7 @@ if run_command("git clone " .. REPO_URL .. " " .. temp_dir) then
 end
 
 -- Check if the directory exists
-if run_command("test -d " .. temp_dir) then
+if run_command("test -d " .. target_dir) then
     print(temp_dir .. " already exists.")
     print("Do you want to overwrite the main directory? (yes/no): ")
     local answer = io.read()
