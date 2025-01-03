@@ -145,6 +145,17 @@ if run_command("sudo activate-global-python-argcomplete3") then
     print("activate-global-python-argcomplete3 has been executed successfully")
 end
 
+-- Check if openSSH server is installed
+print("Checking if OpenSSH server is installed")
+if run_command("dpkg -l | grep -q openssh-server") then
+    print("OpenSSH server is already installed")
+else
+    print("OpenSSH server is not installed")
+    if run_command("sudo apt-get install -y openssh-server") then
+        print("OpenSSH server has been installed successfully")
+    end
+end
+
 -- Clone the Ansible repository
 print("Clone a git repository")
 
