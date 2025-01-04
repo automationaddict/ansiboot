@@ -156,6 +156,17 @@ else
     end
 end
 
+-- Check if Just task runner is installed
+print("Checking if Just task runner is installed")
+if run_command("dpkg -l | grep -q just") then
+    print("Just task runner is already installed")
+else
+    print("Just task runner is not installed")
+    if run_command("sudo apt-get install -y just") then
+        print("Just task runner has been installed successfully")
+    end
+end
+
 -- Clone the Ansible repository
 print("Clone a git repository")
 
