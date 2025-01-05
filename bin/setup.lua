@@ -35,28 +35,23 @@ local function run_command(command)
 end
 
 print("Updating, Upgrading, and Cleaning up the system")
-
 -- Update package list
 print("Updating package list")
-if run_command("sudo apt-get update -y") then
-    print("Package list updated successfully")
-end
+run_command("sudo apt-get update -y")
+print("Package list updated successfully")
 
 -- Upgrade packages
 print("Upgrading packages")
-if run_command("sudo apt-get upgrade -y") then
-    print("Packages upgraded successfully")
-end
+run_command("sudo apt-get upgrade -y")
+print("Packages upgraded successfully")
 
 -- Autoremove packages
 print("Removing unused packages")
-if run_command("sudo apt-get autoremove -y") then
-    print("Unused packages removed successfully")
-end
+run_command("sudo apt-get autoremove -y")
+print("Unused packages removed successfully")
 
 -- Check if software-properties-common is installed
 print("Checking if software-properties-common is installed")
-
 if run_command("dpkg -l | grep -q software-properties-common") then
     print("software-properties-common is already installed")
 else
@@ -68,7 +63,6 @@ end
 
 -- Check if ansible repository is present
 print("Check if Ansible repository is present")
-
 if run_command("grep -r '^deb .*ansible/ansible' /etc/apt/sources.list.d/") then
     print("Ansible repository is already present")
 else
@@ -80,7 +74,6 @@ end
 
 -- Check if Ansible is installed
 print("Checking if Ansible is installed")
-
 if run_command("dpkg -l | grep -q ansible") then
     print("Ansible is already installed")
 else
@@ -92,7 +85,6 @@ end
 
 -- Check if Python3 is installed
 print("Checking if Python 3 is installed")
-
 if run_command("dpkg -l | grep -q python3") then
     print("Python 3 is already installed")
 else
@@ -104,7 +96,6 @@ end
 
 -- Check if Python3 Pip is installed
 print("Checking if Python 3 Pip is installed")
-
 if run_command("dpkg -l | grep -q python3-pip") then
     print("Python 3 Pip is already installed")
 else
@@ -116,7 +107,6 @@ end
 
 -- Check if Python3 Watchdog is installed
 print("Checking if Python 3 Watchdog is installed")
-
 if run_command("dpkg -l | grep -q python3-watchdog") then
     print("Python 3 Watchdog is already installed")
 else
@@ -126,9 +116,19 @@ else
     end
 end
 
+-- Check if python3 testresources is installed
+print("Checking if Python 3 testresources is installed")
+if run_command("dpkg -l | grep -q python3-testresources") then
+    print("Python 3 testresources is already installed")
+else
+    print("Python 3 testresources is not installed")
+    if run_command("sudo apt-get install -y python3-testresources") then
+        print("Python 3 testresources has been installed successfully")
+    end
+end
+
 -- Check if Python3 ArgComplete is installed
 print("Checking if Python 3 ArgComplete is installed")
-
 if run_command("dpkg -l | grep -q python3-argcomplete") then
     print("Python 3 ArgComplete is already installed")
 else
@@ -138,11 +138,32 @@ else
     end
 end
 
+-- Check if Python4 venv is installed
+print("Checking if Python 3 venv is installed")
+if run_command("dpkg -l | grep -q python3-venv") then
+    print("Python 3 venv is already installed")
+else
+    print("Python 3 venv is not installed")
+    if run_command("sudo apt-get install -y python3-venv") then
+        print("Python 3 venv has been installed successfully")
+    end
+end
+
 -- Ensure that the global Python 3 ArgComplete activation script is executed
 print("Checking if activate-global-python-argcomplete3 has been executed")
-
 if run_command("sudo activate-global-python-argcomplete3") then
     print("activate-global-python-argcomplete3 has been executed successfully")
+end
+
+-- Check if wkhtmltopdf is installed
+print("Checking if wkhtmltopdf is installed")
+if run_command("dpkg -l | grep -q wkhtmltopdf") then
+    print("wkhtmltopdf is already installed")
+else
+    print("wkhtmltopdf is not installed")
+    if run_command("sudo apt-get install -y wkhtmltopdf") then
+        print("wkhtmltopdf has been installed successfully")
+    end
 end
 
 -- Check if openSSH server is installed
@@ -167,16 +188,57 @@ else
     end
 end
 
--- Clone the Ansible repository
-print("Clone a git repository")
+-- Check if virtualbox is installed
+print("Checking if VirtualBox is installed")
+if run_command("dpkg -l | grep -q virtualbox") then
+    print("VirtualBox is already installed")
+else
+    print("VirtualBox is not installed")
+    if run_command("sudo apt-get install -y virtualbox") then
+        print("VirtualBox has been installed successfully")
+    end
+end
 
+-- Add Vagrant repository
+print("Checking if Vagrant repository is present")
+if run_command("grep -c '^deb .*hashicorp' /etc/apt/sources.list /etc/apt/sources.list.d/*") then
+    print("Vagrant repository is already present")
+else
+    print("Adding Vagrant repository")
+    run_command(
+        "wget -qO - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg")
+    run_command(
+        "echo " ..
+        "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" ..
+        " | sudo tee /etc/apt/sources.list.d/hashicorp.list")
+    print("Vagrant repository has been added successfully")
+end
+
+-- Update package list
+print("Updating package list")
+run_command("sudo apt-get update -y")
+print("Package list updated successfully")
+
+-- Check if Vagrant is installed
+print("Checking if Vagrant is installed")
+if run_command("dpkg -l | grep -q vagrant") then
+    print("Vagrant is already installed")
+else
+    print("Vagrant is not installed")
+    if run_command("sudo apt-get install -y vagrant") then
+        print("Vagrant has been installed successfully")
+    end
+end
+
+-- Clone the Ansible repository
+print("Clone Ansible git repository")
 local temp_dir = os.getenv("HOME") .. "/ansible.tmp/"
 local target_dir = os.getenv("HOME") .. "/ansible/"
 
 -- Clone the repository
 if run_command("git clone " .. REPO_URL .. " " .. temp_dir) then
     create_tmp_dir()
-    print("Repository cloned successfully into " .. temp_dir)
+    print("Ansible repository cloned successfully into " .. temp_dir)
 end
 
 -- Check if the directory exists
