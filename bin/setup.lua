@@ -83,6 +83,17 @@ else
     end
 end
 
+-- Check if Community General Collection is installed
+print("Checking if Community General Collection is installed")
+if run_command("ansible-galaxy collection list | grep -q community.general") then
+    print("Community General Collection is already installed")
+else
+    print("Community General Collection is not installed")
+    if run_command("ansible-galaxy collection install community.general") then
+        print("Community General Collection has been installed successfully")
+    end
+end
+
 -- Check if Python3 is installed
 print("Checking if Python 3 is installed")
 if run_command("dpkg -l | grep -q python3") then
